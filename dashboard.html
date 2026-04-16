@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antigravity - Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg: #050505;
+            --accent: #00ffe6;
+            --card: rgba(255, 255, 255, 0.03);
+        }
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: var(--card);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        h1 { font-weight: 800; letter-spacing: -1px; margin-bottom: 5px; }
+        p { color: #888; margin-bottom: 30px; }
+        .user-email { color: var(--accent); font-weight: bold; }
+        
+        .logout-btn {
+            background: none;
+            border: 1px solid #ff4444;
+            color: #ff4444;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .logout-btn:hover { background: #ff4444; color: white; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>COMMAND CENTER</h1>
+        <p>Pilot Authenticated: <span id="user-display" class="user-email">Loading...</span></p>
+        <button class="logout-btn" id="logoutBtn">Exit Orbit</button>
+    </div>
+
+<script>
+        const SUPABASE_URL = 'https://nsmhyzzvpxducjffnbsy.supabase.co';
+        const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY'; // Gunakan key yang sama
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const userDisplay = document.getElementById('user-display');
+
+        // Gunakan Listener untuk memantau perubahan status autentikasi
+        _supabase.auth.onAuthStateChange((event, session) => {
+            console.log("Auth Event:", event); // Untuk debug di console
+
+            if (session) {
+                // Jika ada sesi (user login), tampilkan email
+                userDisplay.textContent = session.user.email;
+            } else {
+                // Jika tidak ada sesi, baru arahkan ke login
+                // Berikan jeda sedikit agar tidak bentrok dengan proses loading internal
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 500);
+            }
+        });
+
+        // Fungsi Logout
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await _supabase.auth.signOut();
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>
